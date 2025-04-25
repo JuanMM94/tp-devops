@@ -1,15 +1,15 @@
 from typing import Union
-
+import json
 from fastapi import FastAPI
 
 app = FastAPI()
 
+with open("resources/pokedex.json", encoding="utf-8") as f:
+    pokedex = json.load(f)
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/pokemon/{id}")
+def get_pokemon(id: int):
+    result = next((poke for poke in pokedex if poke.get("id") == id), None)
+    if result:
+        return result
+    return {"error": "Pokémon not found"}
